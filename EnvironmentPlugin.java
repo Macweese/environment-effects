@@ -70,9 +70,16 @@ import net.runelite.client.plugins.PluginDescriptor;
  * Varbit for blizzard damage ?
  * Varbit for fire pit (protective warmth)
  *
- * add the area around rellekka.. where u start olafs quest/south of where you hunt the birds/butterflies and shit
- * add waterbirth island
- *      ADD CHECK TO NOT DISPLAY DEBUFF WARNING IN THESE AREAS
+ * snow
+ *      add the area around rellekka.. where u start olafs quest/south of where you hunt the birds/butterflies and shit
+ *      add waterbirth island
+ *           ADD CHECK TO NOT DISPLAY DEBUFF WARNING IN THESE AREAS
+ * insect
+ *      add genie cave west of nardah
+ *      shayzien crypts
+ *      skavid caves
+ *      sophanem dungeon
+ *      temple of ikov dungeon
  *
  * maybe fix the insect/light image, warning triangle looks weird
  *
