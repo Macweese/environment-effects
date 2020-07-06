@@ -75,11 +75,12 @@ import net.runelite.client.plugins.PluginDescriptor;
  *      add waterbirth island
  *           ADD CHECK TO NOT DISPLAY DEBUFF WARNING IN THESE AREAS
  * insect
- *      add genie cave west of nardah
- *      shayzien crypts
- *      skavid caves
  *      sophanem dungeon
- *      temple of ikov dungeon
+ *          ADD OBSTACLES/safe path
+ *                  ODD MARKINGS (SPIKES) - OBJECT ID 20272
+ *                  WALL CRUSHERS (MOVING WALL) - OBJECT ID 6629
+ *                  SAND PIT - OBJECT ID 20335
+ *                  LOOSE FLOOR - OBJECT ID 20271
  *
  * maybe fix the insect/light image, warning triangle looks weird
  *
@@ -100,13 +101,18 @@ public class EnvironmentPlugin extends Plugin
     private static final Set<Integer> SMOKE_MASK = ImmutableSet.of(
             4164,                                   //  FACE MASK
             11864, 11865,                           //  SLAYER HELMET
-            19639, 19641,                           //  BLACK SLAYER  SLAYER HELMET
+            19639, 19641,                           //  BLACK SLAYER HELMET
             19643, 19645,                           //  GREEN SLAYER HELMET
             19647, 19469,                           //  RED SLAYER HELMET
             21264, 21266,                           //  PURPLE SLAYER HELMET
             21888, 21890,                           //  TURQUISE SLAYER HELMET
             23073, 23075,                           //  HYDRA SLAYER HELMET
             24370, 24444                            //  TWISTED SLAYER HELMET
+    );
+
+    private static final Set<Integer> UNDERWATER_REGION = ImmutableSet.of(
+            15008, 15264,                           //  FOSSIL ISLAND UNDERWATER
+            11924                                   //  MOGRE CAMP
     );
 
     private static final Set<Integer> BLIZZARD_REGION = ImmutableSet.of(
@@ -118,7 +124,14 @@ public class EnvironmentPlugin extends Plugin
     private static final Set<Integer> INSECT_REGION = ImmutableSet.of(
             13206, 12950,                           //  DORGESH-KAAN MINE
             9358, 9359, 9360, 9615, 9616, 9871,     //  KRUK'S DUNGEON
-            12693, 12949                            //  LUMBRIDGE SWAMP CAVE
+            12693, 12949,                           //  LUMBRIDGE SWAMP CAVE
+            5786, 5787, 5788, 5789,                 //  SHAYZIEN CRYPTS
+            6042, 6043, 6044, 6045,
+            10131,                                  //  SKAVID CAVES
+            13457,                                  //  GENIE CAVE
+            13200, 12944,                           //  SOPHANEM DUNGEON
+            10648                                   //  TEMPLE OF IKOV DUNGEON
+
     );
 
     private static final Set<Integer> SMOKE_REGION = ImmutableSet.of(
@@ -164,6 +177,8 @@ public class EnvironmentPlugin extends Plugin
     private boolean renderSnow;
     private boolean renderNight;
     private boolean renderLight;
+    private boolean renderWater;
+//    private boolean renderKrukPath;
 //    private boolean renderBobbing;
 //    private boolean renderQuake;
 
@@ -187,6 +202,7 @@ public class EnvironmentPlugin extends Plugin
         renderSnow = config.snowEffect();
         renderNight = config.nightVision();
         renderLight = config.zamorakEffect();
+        renderWater = config.waterRegion();
 /*
         renderBobbing = config.fishingTrawler();
         renderQuake = config.olmShake();
@@ -229,6 +245,15 @@ public class EnvironmentPlugin extends Plugin
         if (snowRegion(regionID) && client.getWidget(SNOW_SCREEN_OVERLAY) != null)
             client.getWidget(SNOW_SCREEN_OVERLAY).setHidden(renderSnow);
 
+        if (waterRegion(regionID))
+        {
+            if (client.getWidget(UNDERWATER_OVERLAY) != null)
+                client.getWidget(UNDERWATER_OVERLAY).setHidden(renderWater);
+
+            if (client.getWidget(UNDERWATER_OVERLAY2) != null)
+                client.getWidget(UNDERWATER_OVERLAY2).setHidden(renderWater);
+        }
+
         if (insectRegion(regionID))
         {
             if (client.getWidget(DUNGEON_DARKNESS_1) != null)
@@ -249,6 +274,7 @@ public class EnvironmentPlugin extends Plugin
 
         if (smokeRegion(regionID) || snowRegion(regionID) || insectRegion(regionID))
             updateInfobox();
+
         else removeInfobox();
 
     }
@@ -275,6 +301,9 @@ public class EnvironmentPlugin extends Plugin
                 || renderNight && event.getId() == DUNGEON_DARKNESS_3.getId() && inRegion())
             hideWidget(event, true);
 
+        if ((renderWater && event.getId() == UNDERWATER_OVERLAY.getId()) || (renderWater && event.getId() == UNDERWATER_OVERLAY2.getId()) && inRegion())
+            hideWidget(event, true);
+
     }
 
     private void onStart()
@@ -297,6 +326,12 @@ public class EnvironmentPlugin extends Plugin
 
         if (client.getWidget(SMOKE_SCREEN_OVERLAY) != null)
             client.getWidget(SMOKE_SCREEN_OVERLAY).setHidden(renderSmoke);
+
+        if (client.getWidget(UNDERWATER_OVERLAY) != null)
+            client.getWidget(UNDERWATER_OVERLAY).setHidden(renderWater);
+
+        if (client.getWidget(UNDERWATER_OVERLAY2) != null)
+            client.getWidget(UNDERWATER_OVERLAY2).setHidden(renderWater);
     }
 
     private void onTerminate()
@@ -318,6 +353,12 @@ public class EnvironmentPlugin extends Plugin
 
         if (client.getWidget(SMOKE_SCREEN_OVERLAY) != null)
             client.getWidget(SMOKE_SCREEN_OVERLAY).setHidden(false);
+
+        if (client.getWidget(UNDERWATER_OVERLAY) != null)
+            client.getWidget(UNDERWATER_OVERLAY).setHidden(false);
+
+        if (client.getWidget(UNDERWATER_OVERLAY2) != null)
+            client.getWidget(UNDERWATER_OVERLAY2).setHidden(false);
     }
 
     private void hideWidget(Widget widget, boolean hidden)
@@ -356,6 +397,9 @@ public class EnvironmentPlugin extends Plugin
         else if (zamorakRegion(regionID))
             return true;
 
+        else if (waterRegion(regionID))
+            return true;
+
         else return false;
 
 /*     else if (trawlerRegion(regionID))
@@ -382,6 +426,12 @@ public class EnvironmentPlugin extends Plugin
     {
         HashSet<Integer> ZAMORAK_REGIONS = new HashSet<Integer>(ZAMORAK_REGION);
         return ZAMORAK_REGIONS.contains(regionID);
+    }
+
+    public boolean waterRegion(int regionID)
+    {
+        HashSet<Integer> WATER_REGIONS = new HashSet<Integer>(UNDERWATER_REGION);
+        return WATER_REGIONS.contains(regionID);
     }
 
     public boolean insectRegion(int regionID)

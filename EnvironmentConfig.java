@@ -71,10 +71,20 @@ import net.runelite.client.config.*;
        default boolean zamorakEffect() {
            return false;
        }
+
+        @ConfigItem(
+                position = 4,
+                keyName = "waterRegion",
+                name = "Underwater",
+                description = "Removes the on-screen water effect in when diving underwater"
+        )
+        default boolean waterRegion() {
+            return false;
+        }
 /*
 
        @ConfigItem(
-               position = 4,
+               position = 5,
                keyName = "krukDungeon",
                name = "Monkey Madness 2",
                description = "Highlight the safe tiles in the Monkey Madness 2 dungeon"
@@ -86,7 +96,7 @@ import net.runelite.client.config.*;
        // no
 
        @ConfigItem(
-               position = 5,
+               position = 6,
                keyName = "fishingTrawler",
                name = "Fishing Trawler",
                description = "Disable the camera bobbing effect in the Fishing Trawler minigame"
@@ -97,7 +107,7 @@ import net.runelite.client.config.*;
 
 
        @ConfigItem(
-               position = 6,
+               position = 7,
                keyName = "olmShake",
                name = "CoX earthquake",
                description = "Disable the camera shake effect during the fight against Olm in Chambers of Xeric"
